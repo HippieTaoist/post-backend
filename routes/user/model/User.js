@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-
+    date: {
+        type: Date,
+    },
     firstName: {
         type: String,
         validate: /^[a-zA-Z]*$/
@@ -32,3 +34,5 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+
+module.exports = mongoose., model("user", userSchema)
