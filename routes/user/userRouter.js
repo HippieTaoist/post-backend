@@ -8,8 +8,22 @@ const User = require('./model/User');
 
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
+router.get('/', async function (req, res) {
+  try {
+    let payload = await User.find(req.body);
 
+    res.json({
+      message: "Successfully Fetched Users",
+      payload: payload,
+    })
+
+  } catch (err) {
+    res
+      .status(500).json({
+        message: "Error fetching Users",
+        error: err.message
+      })
+  }
 
 
 });
@@ -47,6 +61,12 @@ router.post('/create-user', async function (req, res) {
         error: errorHandler(err)
       })
   }
+})
+
+router.post('/login-user', async function (req, res) {
+
+
+
 })
 
 module.exports = router;
