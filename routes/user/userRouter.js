@@ -1,7 +1,9 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 var express = require('express');
 var router = express.Router();
 
-const bcrypt = require('bcryptjs');
 
 const errorHandler = require('../utils/errorHandler/errorHandler');
 const User = require('./model/User');
@@ -64,7 +66,59 @@ router.post('/create-user', async function (req, res) {
 })
 
 router.post('/login-user', async function (req, res) {
+  const {
+    email,
+    password
+  } = req.body;
 
+  try {
+
+    let foundUser = await User
+      .findOne({
+        email: email,
+      })
+
+    if (!foundUser) {
+      return res.status(500).json({
+        message: "error logging in user",
+        error: "Please go sign up"
+      })
+    } else {
+      let comparedPassword = await bcrypt.compare(password, foundUser.password);
+
+      if (!comparedPassword) {
+        return res.status(500).json({
+          message: "error",
+          error: "Please check email and password"
+        })
+      } else {
+        let jwtToken = jwt
+          .sign({
+            email: foundUser.email,
+            username: foundUser.username,
+          }, process.env.SECRET_KEY, {
+            expiresIn: "24h"
+          })
+
+        return res.json({
+          message: "Successfully Logged In",
+          payload: jwtToken,
+        })
+      }
+    }
+
+
+
+
+
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: "error",
+      error: err.message,
+    })
+  }
 
 
 })
