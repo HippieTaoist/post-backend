@@ -1,5 +1,4 @@
-const User = require("../model/User")
-
+const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs")
 const {
     isEmpty,
@@ -9,15 +8,33 @@ const {
     isStrongPassword,
 } = require("validator")
 
+const User = require("../model/User")
+
+async function fetchAllUsers(req, res) {
+    try {
+        let payload = await User.find(req.body);
+
+        res.json({
+            message: "Successfully Fetched Users",
+            payload: payload,
+        })
+
+    } catch (err) {
+        res
+            .status(500).json({
+                message: "Error fetching Users",
+                error: err.message
+            })
+    }
 
 
-
+}
 
 async function createUser(req, res) {
     const {
         firstName,
         lastName,
-        username,
+        userName,
         email,
         password,
     } = req.body
@@ -29,7 +46,7 @@ async function createUser(req, res) {
 
             firstName,
             lastName,
-            username,
+            userName,
             email,
             password: hashedPassword,
         })
@@ -47,7 +64,6 @@ async function createUser(req, res) {
             })
     }
 }
-
 
 async function loginUser(req, res) {
     const {
@@ -79,7 +95,7 @@ async function loginUser(req, res) {
                 let jwtToken = jwt
                     .sign({
                         email: foundUser.email,
-                        username: foundUser.username,
+                        userName: foundUser.userName,
                     }, process.env.SECRET_KEY, {
                         expiresIn: "24h"
                     })
@@ -92,7 +108,7 @@ async function loginUser(req, res) {
         }
     } catch (err) {
         res.status(500).json({
-            message: "error",
+            message: "Login Error",
             error: err.message,
         })
     }
@@ -125,15 +141,36 @@ async function updateUserById(req, res) {
         })
     } catch (err) {
         res.status(500).json({
-            message: "error",
+            message: "Error updating user",
             error: err.message
         })
     }
 
 }
 
+async function getUserProfile(req, res) {
+    try {
+
+        let decodedToken = jet.decode(req.body.token, process.env.SECRET_KEY);
+
+        res.json({
+            token: decodedToken
+        })
+
+    } catch (err) {
+        res.status(500).json({
+            message: "error",
+            error: err.message
+        })
+
+
+    }
+}
+
 module.exports = {
+    fetchAllUsers,
     createUser,
     loginUser,
     updateUserById,
+    getUserProfile
 }

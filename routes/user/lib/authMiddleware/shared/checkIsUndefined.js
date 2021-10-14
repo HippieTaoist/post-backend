@@ -12,4 +12,6 @@ function checkIsUndefined(req, res, next) {
         next()
     }
 }
-module.exports = checkIsUndefined
+module.exports = {
+    checkIsUndefined
+}

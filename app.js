@@ -8,7 +8,8 @@ var logger = require('morgan');
 // ROUTES
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user/userRouter');
-// var postRouter = require('./routes/post')
+var postRouter = require('./routes/post/postRouter')
+var commentRouter = require('./routes/comment/commentRouter')
 
 const mongoose = require('mongoose');
 
@@ -43,7 +44,8 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/api/user', userRouter);
-// app.use('/api/post', postRouter);
+app.use('/api/post', postRouter);
+app.use('/api/comment', commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
