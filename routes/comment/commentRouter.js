@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 let Comment = require("./model/Comment")
+let Post = require('../post/model/Post');
+let User = require("../user/model/User")
+
+const jwt = require('jsonwebtoken')
 
 const {
     jwtMiddleware,
@@ -9,46 +13,58 @@ const {
 
 const {
     fetchAllComments,
-} = require('./controller/commentController')
+    createComment
+} = require('./controller/commentController');
 
-router.get('/fetch-all-comments', jwtMiddleware, async function (req, res, next) {
+
+router.get('/fetch-all-comments', jwtMiddleware, fetchAllComments)
+
+router.post('/create-comment', jwtMiddleware, createComment)
+
+
+router.put('/edit-comment-by-id/:id', jwtMiddleware, async function (req, res, next) {
+    const {
+        commentContext,
+    } = req.body
 
     try {
-        let payload = await Comment.find(req.body)
 
+        let editedComment = await Comment.findByIdAndUpdate(req.params.id)
 
+        if (!editedComment) {
+            return res.status(404).json({
+                message: "No comments found for that ID."
+            })
+        }
 
-
-
-
-        res.json({
-            message: 'This is where you fetch Comments;',
-            payload: payload,
+        const decodedData = res.locals.decodedData;
+        let foundUser = await User.findOne({
+            email: decodedData.email,
         })
+
+        if (!foundUser) {
+            return res.status(404).json({
+                message: "User not found.",
+                error: "User not found."
+            })
+        } else {
+            editedComment.commentContext = commentContext
+        }
+
+        let savedComment = await editedComment.save()
+        res.json({
+            message: "'This is where you edit Comments;'",
+            payload: savedComment
+        })
+
     } catch (err) {
         res.status(500).json({
-            message: "Trouble Fetching Comments",
+            message: "Error in editing Comment: See Below for more information",
             error: err.message
         })
     }
 
 
-})
-
-router.post('/create-comment', jwtMiddleware, async function (req, res, next) {
-
-    res.json({
-        message: "This is where you create Comments",
-        error: "Nothing wrong here",
-    })
-})
-
-router.put('/edit-comment-by-id/:id', jwtMiddleware, async function (req, res, next) {
-
-    res.json({
-        message: "'This is where you edit Comments;'",
-        error: "Nothing wrong here",
-    })
 })
 
 router.delete('/delete-comment-by-id/:id', jwtMiddleware, async function (req, res, next) {
@@ -58,4 +74,6 @@ router.delete('/delete-comment-by-id/:id', jwtMiddleware, async function (req, r
         error: "Nothing wrong here",
     })
 })
+
+
 module.exports = router;
