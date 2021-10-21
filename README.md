@@ -17,13 +17,13 @@ Cannot change user
 
 ~~Posts collection will have title, date, comments, user it belongs to, and post~~
 
-CRUD for commentsconst 
+~~CRUD for comments~~
 
-Cannot change user who commented
+~~Cannot change user who commented~~
 
-Each can create a post, edit, update and delete their own comments
+~~Each can create a post, edit, update and delete their own comments~~
 
-Comments collection will have date, post it belongs to, user and comment
+~~Comments collection will have date, post it belongs to, user and comment~~
 
 ~~Use MongoDB, mongoose, bcryptjs, JWT~~
 

@@ -4,7 +4,8 @@ const User = require('../../user/model/User')
 
 async function fetchPosts(req, res, next) {
 
-    let foundAllPosts = await Post.find({})
+    let foundAllPosts = await Post.find({}).populate("owner", "username",
+        "_id");
 
 
     res.json({
@@ -135,7 +136,7 @@ async function deletePostById(req, res, next) {
 
         let userPostHistoryArray = foundUser.postHistory
         let filteredPostHistoryArray = userPostHistoryArray.filter(
-            (item) => item._id.toString() !== req.params.id
+            (item) => `${item._id}` !== `$(deletedPost._id)`
         )
 
         foundUser.postHistory = filteredPostHistoryArray
